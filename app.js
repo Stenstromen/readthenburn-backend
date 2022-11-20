@@ -1,9 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-
 const compression = require("compression");
+const cors = require("cors");
 const app = express();
 const rtbRouter = require("./routers/rtb.router");
+const AUTHHEADER_PASSWORD = process.env.AUTHHEADER_PASSWORD;
+
+app.use(cors({origin: true}));
+
+app.use((req, res, next) => {
+  if (!req.headers.authorization || req.headers.authorization !== AUTHHEADER_PASSWORD ) {
+      return res.status(403).json({ error: "Invalid or no credentials" });
+  }
+  next();
+})
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
